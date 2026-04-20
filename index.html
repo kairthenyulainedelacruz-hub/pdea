@@ -1,0 +1,943 @@
+<!DOCTYPE html><html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>PDEA Rank Hub</title>
+  <style>
+    :root {
+      --green-900: #0a5a27;
+      --green-800: #0f7331;
+      --green-700: #14883a;
+      --green-600: #1fb24f;
+      --green-500: #39cf72;
+      --bg: #f6fff8;
+      --panel: rgba(255,255,255,0.90);
+      --text: #10361f;
+      --muted: #5f7667;
+      --line: rgba(16, 54, 31, 0.10);
+      --shadow: 0 18px 50px rgba(12, 82, 39, 0.12);
+      --radius-xl: 26px;
+      --radius-lg: 18px;
+      --radius-md: 14px;
+    }
+    * { box-sizing: border-box; }
+    html, body { height: 100%; }
+    body {
+      margin: 0;
+      font-family: Inter, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      color: var(--text);
+      background:
+        radial-gradient(circle at top left, rgba(57, 207, 114, 0.16), transparent 28%),
+        radial-gradient(circle at bottom right, rgba(15, 115, 49, 0.10), transparent 26%),
+        linear-gradient(135deg, #ffffff 0%, #f1fff5 50%, #e7fff0 100%);
+    }
+    .hidden { display: none !important; }
+    .small { color: var(--muted); font-size: 12px; }
+    .muted { color: var(--muted); }.panel {
+  background: var(--panel);
+  border: 1px solid rgba(16,54,31,0.10);
+  box-shadow: var(--shadow);
+  border-radius: 30px;
+}
+
+.login-screen {
+  min-height: 100vh;
+  display: grid;
+  place-items: center;
+  padding: 18px;
+}
+.auth-shell {
+  width: min(1180px, 100%);
+  display: grid;
+  grid-template-columns: 1.08fr .92fr;
+  gap: 16px;
+}
+.auth-hero {
+  color: white;
+  padding: 28px;
+  position: relative;
+  overflow: hidden;
+  background: linear-gradient(135deg, rgba(15,115,49,0.98), rgba(57,207,114,0.88));
+}
+.auth-hero::after {
+  content: "";
+  position: absolute;
+  right: -70px;
+  bottom: -70px;
+  width: 260px;
+  height: 260px;
+  background: rgba(255,255,255,0.12);
+  border-radius: 50%;
+  filter: blur(10px);
+}
+.auth-top { display: flex; align-items: center; gap: 14px; position: relative; z-index: 1; }
+.logo-box {
+  width: 74px; height: 74px; border-radius: 22px; overflow: hidden;
+  background: rgba(255,255,255,0.14); border: 1px solid rgba(255,255,255,0.22);
+  display: grid; place-items: center; flex: none;
+}
+.logo-box img { width: 100%; height: 100%; object-fit: cover; display: block; }
+.group-pill {
+  display: inline-flex; align-items: center; gap: 8px; margin-bottom: 10px;
+  padding: 8px 12px; border-radius: 999px;
+  background: rgba(255,255,255,0.12); border: 1px solid rgba(255,255,255,0.12);
+  font-size: 12px; font-weight: 800;
+}
+.auth-hero h2 { margin: 0 0 8px; font-size: clamp(28px, 3vw, 44px); position: relative; z-index: 1; }
+.auth-hero p { margin: 0; max-width: 65ch; line-height: 1.6; position: relative; z-index: 1; }
+.feature-grid { display: grid; gap: 10px; margin-top: 20px; position: relative; z-index: 1; }
+.feature {
+  padding: 12px 14px; border-radius: 16px;
+  background: rgba(255,255,255,0.12); border: 1px solid rgba(255,255,255,0.14);
+}
+
+.auth-panel { padding: 22px; }
+.tabs { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; margin-bottom: 14px; }
+.tab-btn {
+  padding: 11px 10px; border-radius: 14px; border: 1px solid rgba(16,54,31,0.10);
+  background: white; font: inherit; font-weight: 800; cursor: pointer; color: var(--green-900);
+}
+.tab-btn.active { background: linear-gradient(135deg, var(--green-800), var(--green-500)); color: white; border-color: transparent; }
+.auth-card { display: grid; gap: 10px; }
+.input, .select, textarea {
+  width: 100%; border: 1px solid rgba(16,54,31,0.12); border-radius: 14px; padding: 12px 14px;
+  background: rgba(255,255,255,0.92); color: var(--text); font: inherit; outline: none;
+}
+.input:focus, .select:focus, textarea:focus {
+  border-color: rgba(31,178,79,0.55); box-shadow: 0 0 0 4px rgba(31,178,79,0.10);
+}
+.btn {
+  border: none; border-radius: 14px; padding: 12px 14px; font: inherit; font-weight: 800;
+  cursor: pointer; transition: .18s ease; background: linear-gradient(135deg, var(--green-800), var(--green-500));
+  color: white; box-shadow: 0 10px 24px rgba(15,115,49,0.22);
+}
+.btn.secondary { background: white; color: var(--green-900); border: 1px solid rgba(16,54,31,0.12); box-shadow: none; }
+.btn:hover { opacity: .96; transform: translateY(-1px); }
+.btn:active { transform: translateY(0); }
+.status {
+  margin-top: 8px; padding: 12px 14px; border-radius: 14px;
+  background: rgba(31,178,79,0.08); border: 1px solid rgba(31,178,79,0.14); color: var(--green-900);
+  line-height: 1.5; font-size: 13px;
+}
+
+.app { display: grid; grid-template-columns: 300px 1fr; min-height: 100vh; }
+.sidebar {
+  position: sticky; top: 0; height: 100vh; overflow: auto; padding: 22px;
+  border-right: 1px solid var(--line);
+  background: linear-gradient(180deg, rgba(255,255,255,0.90), rgba(236,255,242,0.84));
+  backdrop-filter: blur(12px);
+}
+.brand {
+  display: flex; align-items: center; gap: 14px; padding: 12px 12px 18px;
+  border-radius: 20px; background: rgba(255,255,255,0.62); border: 1px solid rgba(16,54,31,0.08); box-shadow: var(--shadow);
+}
+.brand-logo {
+  width: 64px; height: 64px; border-radius: 20px; overflow: hidden;
+  background: linear-gradient(135deg, var(--green-800), var(--green-500)); display: grid; place-items: center;
+  color: white; font-weight: 900; letter-spacing: .08em; flex: none;
+}
+.brand-logo img { width: 100%; height: 100%; object-fit: cover; display: block; }
+.brand h1 { margin: 0; font-size: 18px; line-height: 1.1; }
+.brand p { margin: 4px 0 0; font-size: 13px; color: var(--muted); }
+.section-label { margin: 22px 0 10px; font-size: 11px; text-transform: uppercase; letter-spacing: .14em; color: var(--muted); }
+.nav { display: grid; gap: 8px; }
+.nav button {
+  border: 1px solid transparent; background: transparent; color: var(--text); padding: 12px 14px;
+  border-radius: 14px; text-align: left; cursor: pointer; font: inherit; transition: .18s ease;
+}
+.nav button:hover, .nav button.active {
+  background: linear-gradient(135deg, rgba(31,178,79,0.10), rgba(255,255,255,0.95));
+  border-color: rgba(31,178,79,0.16); transform: translateX(2px);
+}
+.sidebar-card {
+  margin-top: 16px; padding: 16px; border-radius: 18px;
+  background: linear-gradient(135deg, rgba(31,178,79,0.08), rgba(255,255,255,0.94)); border: 1px solid rgba(31,178,79,0.14);
+}
+.sidebar-card strong { display: block; margin-bottom: 6px; }
+.sidebar-card small { color: var(--muted); line-height: 1.45; }
+
+.main { padding: 22px; }
+.topbar { display: flex; gap: 16px; align-items: stretch; flex-wrap: wrap; margin-bottom: 18px; }
+.hero {
+  flex: 1 1 420px; border-radius: 30px; background: linear-gradient(135deg, rgba(15,115,49,0.97), rgba(57,207,114,0.88));
+  color: white; box-shadow: var(--shadow); padding: 26px; position: relative; overflow: hidden;
+}
+.hero::after { content: ""; position: absolute; right: -60px; bottom: -50px; width: 220px; height: 220px; background: rgba(255,255,255,0.14); border-radius: 50%; filter: blur(10px); }
+.hero-top { display: flex; align-items: center; gap: 14px; margin-bottom: 16px; position: relative; z-index: 1; }
+.hero-logo { width: 62px; height: 62px; border-radius: 20px; overflow: hidden; background: rgba(255,255,255,0.16); border: 1px solid rgba(255,255,255,0.22); flex: none; display: grid; place-items: center; }
+.hero-logo img { width: 100%; height: 100%; object-fit: cover; display: block; }
+.hero h2 { margin: 0 0 8px; font-size: clamp(26px, 3vw, 42px); position: relative; z-index: 1; }
+.hero p { margin: 0; max-width: 70ch; line-height: 1.6; opacity: .97; position: relative; z-index: 1; }
+.hero-actions { display: flex; gap: 10px; flex-wrap: wrap; margin-top: 18px; position: relative; z-index: 1; }
+.controls { flex: 0 1 300px; display: grid; gap: 10px; min-width: 280px; }
+
+.grid-stats { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 16px; margin-bottom: 16px; }
+.card { background: var(--panel); border: 1px solid rgba(16,54,31,0.10); border-radius: var(--radius-xl); box-shadow: var(--shadow); padding: 18px; }
+.stat .label { color: var(--muted); font-size: 13px; }
+.stat .value { margin: 8px 0 6px; font-size: 28px; font-weight: 900; }
+.stat .hint { color: var(--muted); font-size: 12px; }
+.content-grid { display: grid; grid-template-columns: 1.35fr .95fr; gap: 16px; align-items: start; }
+.panel-title { display: flex; justify-content: space-between; gap: 12px; align-items: center; margin-bottom: 14px; }
+.panel-title h3 { margin: 0; font-size: 18px; }
+.panel-title .sub { margin-top: 4px; font-size: 13px; color: var(--muted); }
+.toolbar { display: flex; gap: 10px; flex-wrap: wrap; margin-bottom: 14px; }
+.badge { display: inline-flex; align-items: center; gap: 6px; padding: 7px 10px; border-radius: 999px; background: rgba(31,178,79,0.10); color: var(--green-900); font-size: 12px; font-weight: 800; white-space: nowrap; }
+.badge.gray { background: rgba(93,118,101,0.10); color: var(--muted); }
+.badge.gold { background: rgba(237,190,45,0.16); color: #8a6a00; }
+.table-wrap { overflow: auto; border-radius: 18px; border: 1px solid var(--line); background: white; }
+table { width: 100%; border-collapse: collapse; min-width: 900px; }
+th, td { padding: 13px 14px; text-align: left; border-bottom: 1px solid rgba(16,54,31,0.08); vertical-align: middle; }
+th { position: sticky; top: 0; z-index: 1; background: linear-gradient(135deg, #f4fff7, #eaffef); color: var(--green-900); font-size: 13px; }
+tr:hover td { background: rgba(31,178,79,0.04); }
+.xp-bar { width: 100%; height: 10px; border-radius: 999px; overflow: hidden; background: #eaf6ee; border: 1px solid rgba(16,54,31,0.08); }
+.xp-fill { height: 100%; background: linear-gradient(90deg, var(--green-800), var(--green-500)); border-radius: inherit; width: 0%; }
+.role-list, .log-list { display: grid; gap: 10px; }
+.role-item, .log-item { padding: 12px 14px; border-radius: 14px; background: rgba(255,255,255,0.90); border: 1px solid rgba(16,54,31,0.10); display: flex; justify-content: space-between; gap: 12px; flex-wrap: wrap; }
+.role-item strong, .log-item strong { display: block; }
+.role-item span, .log-item span { color: var(--muted); font-size: 12px; }
+.section { display: none; animation: fadeIn .18s ease; }
+.section.active { display: block; }
+@keyframes fadeIn { from { opacity: .45; transform: translateY(6px); } to { opacity: 1; transform: translateY(0); } }
+.form-grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 12px; }
+.full { grid-column: 1 / -1; }
+.notice { padding: 14px; border-radius: 16px; background: rgba(31,178,79,0.08); border: 1px solid rgba(31,178,79,0.14); color: var(--green-900); line-height: 1.5; margin-bottom: 14px; }
+.profile-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+.profile-card { border-radius: 22px; padding: 18px; border: 1px solid rgba(16,54,31,0.10); background: rgba(255,255,255,0.92); }
+.avatar-circle { width: 86px; height: 86px; border-radius: 26px; overflow: hidden; background: linear-gradient(135deg, var(--green-800), var(--green-500)); display: grid; place-items: center; color: white; font-size: 30px; font-weight: 900; margin-bottom: 12px; }
+.accent-picker { display: flex; gap: 10px; flex-wrap: wrap; }
+.accent-picker button { width: 42px; height: 42px; border-radius: 14px; border: 2px solid white; box-shadow: 0 0 0 1px rgba(16,54,31,0.12); cursor: pointer; }
+.sync-row { display: flex; gap: 10px; flex-wrap: wrap; }
+.line { height: 1px; background: rgba(16,54,31,0.08); margin: 16px 0; }
+@media (max-width: 1120px) { .auth-shell, .app { grid-template-columns: 1fr; } .sidebar { position: relative; height: auto; } .grid-stats, .content-grid, .profile-grid { grid-template-columns: 1fr; } .hero, .controls { flex-basis: 100%; } }
+
+  </style>
+</head>
+<body>
+  <section id="authScreen" class="login-screen">
+    <div class="auth-shell">
+      <div class="auth-hero panel">
+        <div class="auth-top">
+          <div class="logo-box">
+            <img src="assets/pdea-logo.png" alt="PDEA logo" onerror="this.style.display='none'; this.parentElement.textContent='PDEA'" />
+          </div>
+          <div>
+            <div class="group-pill">PDEA • Roblox Group ID 12969502</div>
+            <h2>Rank Hub Login</h2>
+          </div>
+        </div>
+        <p>Roblox group effort tracker with separate staff accounts, profile customization, ranked access, and a green-and-white admin interface.</p>
+        <div class="feature-grid">
+          <div class="feature"><strong>Discord-linked login</strong><br><span class="small">Connect Discord on the backend, then match the Discord user to the site account.</span></div>
+          <div class="feature"><strong>Roblox username verification</strong><br><span class="small">Store the Roblox username for each member and verify it in your backend.</span></div>
+          <div class="feature"><strong>Real leaderboard sync</strong><br><span class="small">Ready to connect to your server and pull data from Roblox/Open Cloud.</span></div>
+        </div>
+      </div><div class="auth-panel panel">
+    <div class="tabs">
+      <button class="tab-btn active" data-auth-tab="login">Login</button>
+      <button class="tab-btn" data-auth-tab="register">Create</button>
+      <button class="tab-btn" data-auth-tab="verify">Verify</button>
+    </div>
+
+    <div id="loginTab" class="auth-card">
+      <h3 style="margin:0;">Login</h3>
+      <input id="loginUser" class="input" placeholder="Username" />
+      <input id="loginPass" class="input" type="password" placeholder="Password" />
+      <button class="btn" id="loginBtn">Login</button>
+      <div class="status">Use your staff username and password to enter. Staff names are not shown on this page.</div>
+    </div>
+
+    <div id="registerTab" class="auth-card hidden">
+      <h3 style="margin:0;">Create account</h3>
+      <input id="regUser" class="input" placeholder="Username" />
+      <input id="regPass" class="input" type="password" placeholder="Password" />
+      <select id="regRole" class="input"></select>
+      <input id="regDisplay" class="input" placeholder="Display name" />
+      <button class="btn" id="registerBtn">Create Account</button>
+      <div class="status">Use this for non-staff members. Staff accounts are assigned internally.</div>
+    </div>
+
+    <div id="verifyTab" class="auth-card hidden">
+      <h3 style="margin:0;">Roblox verification</h3>
+      <input id="rbxUser" class="input" placeholder="Roblox username" />
+      <input id="rbxCode" class="input" placeholder="Verification code" />
+      <button class="btn" id="verifyBtn">Verify Account</button>
+      <div class="status">This page is ready for a backend verification flow. For real verification, connect your server to Roblox and Discord.</div>
+    </div>
+  </div>
+</div>
+
+  </section>  <div id="app" class="app hidden">
+    <aside class="sidebar">
+      <div class="brand">
+        <div class="brand-logo"><img src="assets/pdea-logo.png" alt="PDEA logo" onerror="this.style.display='none'; this.parentElement.textContent='PDEA'" /></div>
+        <div>
+          <h1>PDEA Rank Hub</h1>
+          <p>Effort, ranks, and permissions</p>
+          <div class="badge gold" style="margin-top:8px;">mwas4you • 12969502</div>
+        </div>
+      </div><div class="section-label">Navigation</div>
+  <div class="nav" id="navButtons">
+    <button class="active" data-section="dashboard">Dashboard</button>
+    <button data-section="personnel">Personnel</button>
+    <button data-section="manage">Manage XP</button>
+    <button data-section="profile">Profile</button>
+    <button data-section="roles">Roles</button>
+    <button data-section="sync">Sync</button>
+    <button data-section="logs">Logs</button>
+  </div>
+
+  <div class="section-label">Current Account</div>
+  <div class="sidebar-card">
+    <strong id="currentUserName">Guest</strong>
+    <small id="currentUserRoleText">No role selected.</small>
+  </div>
+
+  <div class="sidebar-card">
+    <strong>Permissions</strong>
+    <small>FEM has full access. FEM, COR, DRG, and DEVELOPER can manage XP and staff records.</small>
+  </div>
+</aside>
+
+<main class="main">
+  <div class="topbar">
+    <div class="hero">
+      <div class="hero-top">
+        <div class="hero-logo"><img src="assets/pdea-logo.png" alt="PDEA logo" onerror="this.style.display='none'; this.parentElement.textContent='PDEA'" /></div>
+        <div><div class="badge gold" id="roleBadge">Selected role: FEM</div></div>
+      </div>
+      <h2>PDEA Group Rank System</h2>
+      <p>Track effort, manage accounts, customize profiles, and prepare leaderboard sync for your Roblox group.</p>
+      <div class="hero-actions">
+        <button class="btn secondary" id="logoutBtn">Logout</button>
+        <button class="btn" id="refreshBtn">Refresh</button>
+      </div>
+    </div>
+
+    <div class="controls">
+      <input id="searchInput" class="input" type="search" placeholder="Search personnel, role, Roblox name..." />
+      <select id="currentUserRole" class="input"></select>
+      <select id="viewFilter" class="input">
+        <option value="all">All Members</option>
+        <option value="top10">Top 10</option>
+        <option value="leaders">Leadership</option>
+        <option value="agents">Agents</option>
+        <option value="training">Training</option>
+      </select>
+    </div>
+  </div>
+
+  <section id="dashboard" class="section active">
+    <div class="grid-stats">
+      <div class="card stat"><div class="label">Total Personnel</div><div class="value" id="totalPersonnel">0</div><div class="hint">All saved members</div></div>
+      <div class="card stat"><div class="label">XP Added</div><div class="value" id="xpToday">0</div><div class="hint">Current session total</div></div>
+      <div class="card stat"><div class="label">Top Effort</div><div class="value" id="topEffort">—</div><div class="hint">Highest XP member</div></div>
+      <div class="card stat"><div class="label">Manage Access</div><div class="value" id="manageAccess">Yes</div><div class="hint">Depends on selected role</div></div>
+    </div>
+
+    <div class="content-grid">
+      <div class="card">
+        <div class="panel-title">
+          <div><h3>Leaderboard</h3><div class="sub">Sorted by effort points</div></div>
+          <span class="badge" id="syncBadge">Local demo mode</span>
+        </div>
+        <div class="table-wrap">
+          <table>
+            <thead>
+              <tr>
+                <th>Rank</th><th>Name</th><th>Role</th><th>Roblox</th><th>XP</th><th>Progress</th><th>Status</th>
+              </tr>
+            </thead>
+            <tbody id="rankTable"></tbody>
+          </table>
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="panel-title"><div><h3>Role Summary</h3><div class="sub">Quick overview by tier</div></div></div>
+        <div class="role-list" id="summaryCards"></div>
+      </div>
+    </div>
+  </section>
+
+  <section id="personnel" class="section">
+    <div class="card">
+      <div class="panel-title">
+        <div><h3>Personnel Management</h3><div class="sub">Add, select, edit, and remove members</div></div>
+        <button class="btn secondary" id="seedBtn">Reset Sample Data</button>
+      </div>
+      <div class="toolbar">
+        <input id="personnelName" class="input" placeholder="Personnel name" />
+        <input id="personnelRoblox" class="input" placeholder="Roblox username" />
+        <select id="personnelRole" class="input"></select>
+        <input id="personnelXP" class="input" type="number" min="0" value="0" placeholder="Starting XP" />
+        <button class="btn" id="addPersonnelBtn">Add Personnel</button>
+      </div>
+      <div class="notice">FEM, COR, DRG, and DEVELOPER can manage accounts and XP. FEM has the highest permissions across the whole website.</div>
+      <div class="table-wrap">
+        <table>
+          <thead>
+            <tr><th>Name</th><th>Role</th><th>Roblox</th><th>XP</th><th>Actions</th></tr>
+          </thead>
+          <tbody id="personnelTable"></tbody>
+        </table>
+      </div>
+    </div>
+  </section>
+
+  <section id="manage" class="section">
+    <div class="content-grid">
+      <div class="card">
+        <div class="panel-title">
+          <div><h3>Manage XP</h3><div class="sub">Only staff roles can change effort points</div></div>
+          <span class="badge" id="permissionBadge">Allowed</span>
+        </div>
+        <div class="form-grid">
+          <div>
+            <label class="small">Target Personnel</label>
+            <select id="xpTarget" class="input"></select>
+          </div>
+          <div>
+            <label class="small">XP Amount</label>
+            <input id="xpAmount" class="input" type="number" min="1" value="10" />
+          </div>
+          <div class="full">
+            <label class="small">Reason</label>
+            <textarea id="xpReason" class="input" rows="4" placeholder="Patrol, training, raid, event, active duty..."></textarea>
+          </div>
+          <div class="full sync-row">
+            <button class="btn" id="addXpBtn">Add XP</button>
+            <button class="btn secondary" id="removeXpBtn">Subtract XP</button>
+          </div>
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="panel-title"><div><h3>Permission Rules</h3><div class="sub">Staff structure</div></div></div>
+        <div class="role-list">
+          <div class="role-item"><div><strong>FEM</strong><span>Full access to every section.</span></div><span class="badge gold">Owner</span></div>
+          <div class="role-item"><div><strong>COR / DRG / DEVELOPER</strong><span>Can manage XP, members, and sync tools.</span></div><span class="badge">Staff</span></div>
+          <div class="role-item"><div><strong>Others</strong><span>View leaderboard and profiles only.</span></div><span class="badge gray">Viewer</span></div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section id="profile" class="section">
+    <div class="content-grid">
+      <div class="card">
+        <div class="panel-title">
+          <div><h3>Profile Customization</h3><div class="sub">Change display name, bio, avatar, and accent</div></div>
+        </div>
+        <div class="profile-grid">
+          <div class="profile-card">
+            <div class="avatar-circle" id="avatarPreview">P</div>
+            <label class="small">Display name</label>
+            <input id="profileDisplay" class="input" placeholder="Your display name" />
+            <label class="small" style="margin-top:10px; display:block;">Bio</label>
+            <textarea id="profileBio" class="input" rows="4" placeholder="Short bio for your profile"></textarea>
+          </div>
+          <div class="profile-card">
+            <label class="small">Theme accent</label>
+            <div class="accent-picker" style="margin:10px 0 14px;">
+              <button data-accent="#14883a" style="background:#14883a"></button>
+              <button data-accent="#1fb24f" style="background:#1fb24f"></button>
+              <button data-accent="#0f7331" style="background:#0f7331"></button>
+              <button data-accent="#39cf72" style="background:#39cf72"></button>
+            </div>
+            <label class="small">Profile visibility</label>
+            <select id="profileVisibility" class="input">
+              <option value="public">Public</option>
+              <option value="group">Group only</option>
+              <option value="staff">Staff only</option>
+            </select>
+            <div class="line"></div>
+            <button class="btn" id="saveProfileBtn">Save Profile</button>
+          </div>
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="panel-title"><div><h3>Account Snapshot</h3><div class="sub">Current login details</div></div></div>
+        <div class="role-list">
+          <div class="role-item"><div><strong>Username</strong><span id="snapUser">—</span></div><span class="badge gray">Account</span></div>
+          <div class="role-item"><div><strong>Role</strong><span id="snapRole">—</span></div><span class="badge gray">Rank</span></div>
+          <div class="role-item"><div><strong>Roblox</strong><span id="snapRoblox">—</span></div><span class="badge gray">Verified</span></div>
+          <div class="role-item"><div><strong>Discord</strong><span id="snapDiscord">—</span></div><span class="badge gray">Linked</span></div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section id="roles" class="section">
+    <div class="card">
+      <div class="panel-title"><div><h3>Roles & Categories</h3><div class="sub">Organized by leadership, command, agents, and support</div></div></div>
+      <div class="role-list" id="rolesGrid"></div>
+    </div>
+  </section>
+
+  <section id="sync" class="section">
+    <div class="content-grid">
+      <div class="card">
+        <div class="panel-title">
+          <div><h3>Sync Center</h3><div class="sub">Connect this UI to your backend later</div></div>
+          <span class="badge gold">Backend Ready</span>
+        </div>
+        <div class="notice">Discord login should use OAuth2 on a backend. Roblox group sync should also be handled on the server for safety.</div>
+        <div class="form-grid">
+          <div>
+            <label class="small">Backend API Base</label>
+            <input id="apiBase" class="input" placeholder="https://your-server.com/api" />
+          </div>
+          <div>
+            <label class="small">Roblox Group ID</label>
+            <input id="groupId" class="input" value="12969502" />
+          </div>
+          <div class="full sync-row">
+            <button class="btn" id="testSyncBtn">Test Sync</button>
+            <button class="btn secondary" id="fetchLeaderboardBtn">Fetch Group Leaderboard</button>
+          </div>
+          <div class="full">
+            <label class="small">Last sync response</label>
+            <textarea id="syncOutput" class="input" rows="6" placeholder="No sync yet."></textarea>
+          </div>
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="panel-title"><div><h3>Suggested endpoints</h3><div class="sub">For your backend later</div></div></div>
+        <div class="role-list">
+          <div class="role-item"><div><strong>POST /auth/discord</strong><span>Discord OAuth login callback</span></div><span class="badge gray">Auth</span></div>
+          <div class="role-item"><div><strong>POST /roblox/verify</strong><span>Checks the Roblox username and code</span></div><span class="badge gray">Verify</span></div>
+          <div class="role-item"><div><strong>GET /leaderboard</strong><span>Returns synced group ranks and XP</span></div><span class="badge gray">Data</span></div>
+          <div class="role-item"><div><strong>POST /xp/adjust</strong><span>Only staff roles can modify XP</span></div><span class="badge gray">Staff</span></div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section id="logs" class="section">
+    <div class="card">
+      <div class="panel-title">
+        <div><h3>Activity Logs</h3><div class="sub">Every action is recorded in the session</div></div>
+        <button class="btn secondary" id="clearLogsBtn">Clear Logs</button>
+      </div>
+      <div class="log-list" id="logList"></div>
+    </div>
+  </section>
+</main>
+
+  </div>  <script>
+    const STORAGE_KEY = "pdea_rankhub_staff_v5";
+    const API_KEY = "pdea_apiBase";
+
+    const roles = [
+      { code: "FEM", name: "Founding Empress", canManage: true, tier: "Leadership", fullAccess: true, staff: true },
+      { code: "COR", name: "Co - Owner", canManage: true, tier: "Leadership", fullAccess: false, staff: true },
+      { code: "DRG", name: "Deputy Regional Director", canManage: true, tier: "Leadership", fullAccess: false, staff: true },
+      { code: "DEVELOPER", name: "Developer", canManage: true, tier: "Staff", fullAccess: false, staff: true },
+      { code: "SVIP", name: "Special Very Important Personnel", canManage: false, tier: "VIP", fullAccess: false, staff: false },
+      { code: "VIP", name: "Very Important Personnel", canManage: false, tier: "VIP", fullAccess: false, staff: false },
+      { code: "RD", name: "Regional Director", canManage: false, tier: "Command", fullAccess: false, staff: false },
+      { code: "ADG", name: "Assistant Director General", canManage: false, tier: "Command", fullAccess: false, staff: false },
+      { code: "PRVO", name: "Provincial Officer", canManage: false, tier: "Command", fullAccess: false, staff: false },
+      { code: "CA", name: "Chief Agent", canManage: false, tier: "Field", fullAccess: false, staff: false },
+      { code: "SI", name: "Superintendent", canManage: false, tier: "Field", fullAccess: false, staff: false },
+      { code: "SINSG", name: "Senior Inspector General", canManage: false, tier: "Inspector", fullAccess: false, staff: false },
+      { code: "LINSG", name: "Local Inspector General", canManage: false, tier: "Inspector", fullAccess: false, staff: false },
+      { code: "RINSG", name: "Regional Inspector General", canManage: false, tier: "Inspector", fullAccess: false, staff: false },
+      { code: "DINSG", name: "Division Inspector General", canManage: false, tier: "Inspector", fullAccess: false, staff: false },
+      { code: "SAT", name: "Senior Agent", canManage: false, tier: "Agents", fullAccess: false, staff: false },
+      { code: "III", name: "Agent 3", canManage: false, tier: "Agents", fullAccess: false, staff: false },
+      { code: "II", name: "Agent 2", canManage: false, tier: "Agents", fullAccess: false, staff: false },
+      { code: "UA", name: "Undercover Agent", canManage: false, tier: "Special Ops", fullAccess: false, staff: false },
+      { code: "SO", name: "Surveillance Operative", canManage: false, tier: "Special Ops", fullAccess: false, staff: false },
+      { code: "CIGT", name: "Case Investigator", canManage: false, tier: "Special Ops", fullAccess: false, staff: false },
+      { code: "K9-U", name: "K-9 Handler", canManage: false, tier: "Special Ops", fullAccess: false, staff: false },
+      { code: "TOOF", name: "Tactical Operations Officer", canManage: false, tier: "Operations", fullAccess: false, staff: false },
+      { code: "ECT", name: "Evidence Custodian", canManage: false, tier: "Support", fullAccess: false, staff: false },
+      { code: "ORD", name: "Operations Division", canManage: false, tier: "Support", fullAccess: false, staff: false },
+      { code: "FLD", name: "Forensic & Laboratory Division", canManage: false, tier: "Support", fullAccess: false, staff: false },
+      { code: "TAD", name: "Training and Academy Division", canManage: false, tier: "Training", fullAccess: false, staff: false },
+      { code: "OTP", name: "On Training Personnel", canManage: false, tier: "Trainee", fullAccess: false, staff: false },
+      { code: "Enlisted", name: "Enlisted", canManage: false, tier: "General", fullAccess: false, staff: false }
+    ];
+
+    const defaultAccounts = [
+      { username: "fem_admin", password: "PDEA@FEM2026", role: "FEM", displayName: "FEM Admin", discord: "fem_admin", roblox: "" },
+      { username: "cor_admin", password: "PDEA@COR2026", role: "COR", displayName: "COR Admin", discord: "cor_admin", roblox: "" },
+      { username: "drg_admin", password: "PDEA@DRG2026", role: "DRG", displayName: "DRG Admin", discord: "drg_admin", roblox: "" },
+      { username: "dev_admin", password: "PDEA@DEV2026", role: "DEVELOPER", displayName: "Developer", discord: "dev_admin", roblox: "" }
+    ];
+
+    const samplePersonnel = [
+      { id: crypto.randomUUID(), name: "Alyssa Cruz", role: "FEM", xp: 250, roblox: "AlyssaPDEA" },
+      { id: crypto.randomUUID(), name: "Marco Dela Peña", role: "COR", xp: 198, roblox: "MarcoPDEA" },
+      { id: crypto.randomUUID(), name: "Jace Rivera", role: "DRG", xp: 176, roblox: "JaceOps" },
+      { id: crypto.randomUUID(), name: "Mika Santos", role: "SAT", xp: 128, roblox: "MikaEnforce" },
+      { id: crypto.randomUUID(), name: "Elise Navarro", role: "II", xp: 92, roblox: "EliseAgent" },
+      { id: crypto.randomUUID(), name: "Kian Torres", role: "OTP", xp: 40, roblox: "KianTrainee" }
+    ];
+
+    const state = { accounts: [], personnel: [], logs: [], xpToday: 0, currentUser: null, profile: { displayName: "", bio: "", visibility: "public", accent: "#1fb24f" } };
+    const $ = (id) => document.getElementById(id);
+    const roleByCode = (code) => roles.find(r => r.code === code) || { code, name: code, canManage: false, tier: "Unknown", fullAccess: false, staff: false };
+
+    function loadState() {
+      const raw = localStorage.getItem(STORAGE_KEY);
+      if (raw) {
+        const saved = JSON.parse(raw);
+        state.accounts = saved.accounts || [];
+        state.personnel = saved.personnel || [];
+        state.logs = saved.logs || [];
+        state.xpToday = saved.xpToday || 0;
+        state.currentUser = saved.currentUser || null;
+        state.profile = saved.profile || state.profile;
+      } else {
+        state.accounts = [...defaultAccounts];
+        state.personnel = [...samplePersonnel];
+      }
+      if (!state.accounts.length) state.accounts = [...defaultAccounts];
+      if (!state.personnel.length) state.personnel = [...samplePersonnel];
+    }
+
+    function saveState() {
+      localStorage.setItem(STORAGE_KEY, JSON.stringify({ accounts: state.accounts, personnel: state.personnel, logs: state.logs, xpToday: state.xpToday, currentUser: state.currentUser, profile: state.profile }));
+      localStorage.setItem(API_KEY, $("apiBase").value || "");
+    }
+
+    function currentRole() { return state.currentUser?.role || $("currentUserRole").value || "FEM"; }
+    function isFEM() { return currentRole() === "FEM"; }
+    function canManage() { return ["FEM", "COR", "DRG", "DEVELOPER"].includes(currentRole()); }
+    function currentAccountName() { return state.profile.displayName || state.currentUser?.displayName || state.currentUser?.username || "Guest"; }
+    function xpProgress(xp) { const mod = xp % 100; return mod === 0 ? 100 : mod; }
+    function logAction(title, detail) { state.logs.push({ title, detail, time: new Date().toLocaleString() }); }
+    function updateAccent() { document.documentElement.style.setProperty("--green-800", state.profile.accent || "#0f7331"); document.documentElement.style.setProperty("--green-600", state.profile.accent || "#1fb24f"); }
+
+    function setAuthTab(tab) {
+      document.querySelectorAll("[data-auth-tab]").forEach(btn => btn.classList.toggle("active", btn.dataset.authTab === tab));
+      $("loginTab").classList.toggle("hidden", tab !== "login");
+      $("registerTab").classList.toggle("hidden", tab !== "register");
+      $("verifyTab").classList.toggle("hidden", tab !== "verify");
+    }
+
+    function roleOptionsHTML(includeStaff = true) {
+      return roles.filter(r => includeStaff || !r.staff).map(r => `<option value="${r.code}">${r.code} | ${r.name}</option>`).join("");
+    }
+
+    function filteredPersonnel() {
+      let list = [...state.personnel].filter(person => {
+        const q = $("searchInput").value.trim().toLowerCase();
+        if (!q) return true;
+        const role = roleByCode(person.role);
+        return [person.name, person.role, role.name, person.roblox || ""].join(" ").toLowerCase().includes(q);
+      }).sort((a, b) => b.xp - a.xp);
+      switch ($("viewFilter").value) {
+        case "top10": return list.slice(0, 10);
+        case "leaders": return list.filter(p => ["FEM","COR","DRG","DEVELOPER","SVIP","VIP","RD","ADG","PRVO"].includes(p.role));
+        case "agents": return list.filter(p => ["CA","SI","SAT","III","II","UA","SO","CIGT","K9-U","TOOF","ECT","ORD","FLD","TAD","OTP","Enlisted"].includes(p.role));
+        case "training": return list.filter(p => ["TAD","OTP"].includes(p.role));
+        default: return list;
+      }
+    }
+
+    function refreshAccessUI() {
+      const selected = roleByCode(currentRole());
+      $("roleBadge").textContent = `Selected role: ${selected.code}`;
+      $("manageAccess").textContent = selected.canManage ? "Yes" : "No";
+      $("permissionBadge").textContent = selected.canManage ? "Allowed" : "Locked";
+      $("permissionBadge").className = `badge ${selected.canManage ? "" : "gray"}`;
+      $("currentUserName").textContent = currentAccountName();
+      $("currentUserRoleText").textContent = `${selected.code} | ${selected.name}${isFEM() ? " • full access" : selected.canManage ? " • staff access" : " • view only"}`;
+      $("snapUser").textContent = state.currentUser?.username || "—";
+      $("snapRole").textContent = `${selected.code} | ${selected.name}`;
+      $("snapRoblox").textContent = state.currentUser?.roblox || "—";
+      $("snapDiscord").textContent = state.currentUser?.discord || "—";
+      $("currentUserRole").value = state.currentUser?.role || currentRole();
+      $("currentUserRole").disabled = !isFEM();
+    }
+
+    function renderSummaryCards() {
+      const byTier = {};
+      state.personnel.forEach(p => { const tier = roleByCode(p.role).tier; byTier[tier] = (byTier[tier] || 0) + 1; });
+      $("summaryCards").innerHTML = Object.entries(byTier).sort((a,b) => b[1]-a[1]).map(([tier, count]) => `
+        <div class="role-item"><div><strong>${tier}</strong><span>${count} personnel</span></div><span class="badge gray">${count}</span></div>
+      `).join("") || `<div class="small">No personnel saved yet.</div>`;
+    }
+
+    function renderRoles() {
+      const groups = {};
+      roles.forEach(r => { (groups[r.tier] ||= []).push(r); });
+      const order = ["Leadership","Staff","VIP","Command","Field","Inspector","Agents","Special Ops","Operations","Support","Training","Trainee","General"];
+      $("rolesGrid").innerHTML = order.filter(t => groups[t]).map(t => `
+        <div class="role-item">
+          <div><strong>${t}</strong><span>${groups[t].length} role${groups[t].length > 1 ? "s" : ""}</span></div>
+          <span class="badge">${groups[t].slice(0,3).map(r => r.code).join(", ")}${groups[t].length > 3 ? "…" : ""}</span>
+        </div>
+      `).join("");
+    }
+
+    function renderLeaderboard() {
+      const rows = filteredPersonnel().map((p, idx) => {
+        const role = roleByCode(p.role);
+        return `
+          <tr>
+            <td><b>#${idx + 1}</b></td>
+            <td>${p.name}</td>
+            <td><span class="badge ${role.canManage ? "" : "gray"}">${role.code} | ${role.name}</span></td>
+            <td>${p.roblox || "—"}</td>
+            <td><b>${p.xp}</b></td>
+            <td><div class="xp-bar"><div class="xp-fill" style="width:${xpProgress(p.xp)}%"></div></div><div class="small">${xpProgress(p.xp)}% to next stage</div></td>
+            <td>${role.fullAccess ? '<span class="badge gold">Owner</span>' : (role.canManage ? '<span class="badge">Staff</span>' : '<span class="badge gray">Member</span>')}</td>
+          </tr>`;
+      }).join("");
+      $("rankTable").innerHTML = rows || `<tr><td colspan="7" class="muted">No personnel found.</td></tr>`;
+    }
+
+    function renderPersonnelTable() {
+      const rows = [...state.personnel].sort((a,b) => a.name.localeCompare(b.name)).map(p => {
+        const role = roleByCode(p.role);
+        return `
+          <tr>
+            <td><b>${p.name}</b></td>
+            <td><span class="badge ${role.canManage ? "" : "gray"}">${role.code} | ${role.name}</span></td>
+            <td>${p.roblox || "—"}</td>
+            <td><b>${p.xp}</b></td>
+            <td><button class="btn secondary" data-action="select" data-id="${p.id}">Select</button> <button class="btn secondary" data-action="delete" data-id="${p.id}">Delete</button></td>
+          </tr>`;
+      }).join("");
+      $("personnelTable").innerHTML = rows || `<tr><td colspan="5" class="muted">No personnel saved yet.</td></tr>`;
+      $("xpTarget").innerHTML = state.personnel.map(p => `<option value="${p.id}">${p.name} — ${p.role}${p.roblox ? " — " + p.roblox : ""}</option>`).join("") || `<option value="">No personnel found</option>`;
+    }
+
+    function renderLogs() {
+      $("logList").innerHTML = [...state.logs].reverse().map(l => `<div class="log-item"><div><strong>${l.title}</strong><span>${l.detail}</span></div><span class="small">${l.time}</span></div>`).join("") || `<div class="small">No logs yet.</div>`;
+    }
+
+    function updateStats() {
+      $("totalPersonnel").textContent = state.personnel.length;
+      $("xpToday").textContent = state.xpToday;
+      const top = [...state.personnel].sort((a,b) => b.xp - a.xp)[0];
+      $("topEffort").textContent = top ? top.name : "—";
+      $("syncBadge").textContent = $("apiBase").value.trim() ? "Backend connected" : "Local demo mode";
+      $("groupId").value = "12969502";
+      $("apiBase").value = localStorage.getItem(API_KEY) || "";
+      $("syncOutput").value = $("apiBase").value.trim() ? `API base: ${$("apiBase").value.trim()}\nGroup: mwas4you (12969502)` : "Local demo mode. Set your backend URL in the Sync section.";
+    }
+
+    function renderProfile() {
+      $("profileDisplay").value = state.profile.displayName || "";
+      $("profileBio").value = state.profile.bio || "";
+      $("profileVisibility").value = state.profile.visibility || "public";
+      $("avatarPreview").textContent = (state.profile.displayName || state.currentUser?.username || "P").charAt(0).toUpperCase();
+    }
+
+    function refreshAll() {
+      updateAccent();
+      refreshAccessUI();
+      renderRoles();
+      renderSummaryCards();
+      renderLeaderboard();
+      renderPersonnelTable();
+      renderLogs();
+      updateStats();
+      saveState();
+    }
+
+    function openApp() { $("authScreen").classList.add("hidden"); $("app").classList.remove("hidden"); renderProfile(); refreshAll(); }
+    function closeApp() { $("app").classList.add("hidden"); $("authScreen").classList.remove("hidden"); }
+
+    function login() {
+      const username = $("loginUser").value.trim();
+      const password = $("loginPass").value.trim();
+      if (!username || !password) return alert("Enter username and password.");
+      const user = state.accounts.find(a => a.username === username && a.password === password);
+      if (!user) return alert("Invalid username or password.");
+      state.currentUser = { ...user };
+      logAction("Login", `${username} logged in as ${user.role}.`);
+      saveState();
+      openApp();
+    }
+
+    function register() {
+      const username = $("regUser").value.trim();
+      const password = $("regPass").value.trim();
+      const role = $("regRole").value;
+      const displayName = $("regDisplay").value.trim() || username;
+      if (!username || !password) return alert("Please complete the account form.");
+      if (state.accounts.some(a => a.username === username)) return alert("That username already exists.");
+      state.accounts.push({ username, password, role, displayName, discord: username, roblox: "" });
+      state.currentUser = { username, password, role, displayName, discord: username, roblox: "" };
+      state.profile.displayName = displayName;
+      logAction("Account created", `${username} created as ${role}.`);
+      saveState();
+      openApp();
+    }
+
+    function verifyRoblox() {
+      const username = $("rbxUser").value.trim();
+      const code = $("rbxCode").value.trim();
+      if (!username || !code) return alert("Enter Roblox username and verification code.");
+      if (!state.currentUser) state.currentUser = { username, role: "Enlisted", displayName: username, discord: username, roblox: username };
+      state.currentUser.roblox = username;
+      logAction("Roblox verified", `${username} verified with code ${code}.`);
+      saveState();
+      alert("Roblox verification saved locally. Connect this to your backend for real verification.");
+      if ($("app").classList.contains("hidden")) openApp(); else refreshAll();
+    }
+
+    function addPersonnel() {
+      const name = $("personnelName").value.trim();
+      const roblox = $("personnelRoblox").value.trim();
+      const role = $("personnelRole").value;
+      const xp = Math.max(0, Number($("personnelXP").value || 0));
+      if (!name) return alert("Please enter a name.");
+      state.personnel.push({ id: crypto.randomUUID(), name, roblox, role, xp });
+      logAction("Personnel added", `${name} added as ${role}.`);
+      $("personnelName").value = "";
+      $("personnelRoblox").value = "";
+      $("personnelXP").value = 0;
+      refreshAll();
+    }
+
+    function adjustXp(delta) {
+      if (!canManage()) return alert("Your selected role cannot manage XP.");
+      const id = $("xpTarget").value;
+      const amount = Math.max(1, Number($("xpAmount").value || 0));
+      const reason = $("xpReason").value.trim() || "No reason provided";
+      const target = state.personnel.find(p => p.id === id);
+      if (!target) return alert("Please select a personnel.");
+      target.xp = Math.max(0, target.xp + (delta * amount));
+      state.xpToday += amount;
+      logAction(delta > 0 ? "XP added" : "XP removed", `${amount} XP ${delta > 0 ? "added to" : "removed from"} ${target.name}. Reason: ${reason}`);
+      $("xpReason").value = "";
+      refreshAll();
+    }
+
+    function deletePersonnel(id) {
+      const person = state.personnel.find(p => p.id === id);
+      if (!person) return;
+      if (!confirm(`Delete ${person.name}?`)) return;
+      state.personnel = state.personnel.filter(p => p.id !== id);
+      logAction("Personnel deleted", `${person.name} was removed.`);
+      refreshAll();
+    }
+
+    function selectPersonnel(id) {
+      const person = state.personnel.find(p => p.id === id);
+      if (!person) return;
+      $("xpTarget").value = id;
+      $("personnelName").value = person.name;
+      $("personnelRoblox").value = person.roblox || "";
+      $("personnelRole").value = person.role;
+      $("personnelXP").value = person.xp;
+    }
+
+    function resetSampleData() {
+      if (!confirm("Reset to sample data? This will erase current saved data.")) return;
+      state.personnel = [...samplePersonnel];
+      state.logs = [];
+      state.xpToday = 0;
+      refreshAll();
+    }
+
+    function clearLogs() { state.logs = []; refreshAll(); }
+
+    async function testSync() {
+      const apiBase = $("apiBase").value.trim();
+      if (!apiBase) { $("syncOutput").value = "Set your backend API base first."; return; }
+      localStorage.setItem(API_KEY, apiBase);
+      $("syncOutput").value = "Testing sync...";
+      try {
+        const res = await fetch(`${apiBase.replace(/\/$/, "")}/health`);
+        const text = await res.text();
+        $("syncOutput").value = `Health status: ${res.status}\n\n${text}`;
+        logAction("Sync tested", "Backend health endpoint checked.");
+      } catch (err) {
+        $("syncOutput").value = `Sync failed: ${err.message}`;
+      }
+      refreshAll();
+    }
+
+    async function fetchLeaderboard() {
+      const apiBase = $("apiBase").value.trim();
+      if (!apiBase) { $("syncOutput").value = "No backend connected. Showing local leaderboard only."; return; }
+      try {
+        const res = await fetch(`${apiBase.replace(/\/$/, "")}/leaderboard?groupId=${encodeURIComponent($("groupId").value)}`);
+        const data = await res.json();
+        $("syncOutput").value = JSON.stringify(data, null, 2);
+        logAction("Leaderboard fetched", "Leaderboard data loaded from backend.");
+      } catch (err) {
+        $("syncOutput").value = `Could not fetch leaderboard: ${err.message}`;
+      }
+      refreshAll();
+    }
+
+    // Navigation
+    document.getElementById("navButtons").addEventListener("click", (e) => {
+      const btn = e.target.closest("button[data-section]");
+      if (!btn) return;
+      const section = btn.dataset.section;
+      if (!isFEM() && section === "sync") { alert("This section is restricted by your role."); return; }
+      if (!canManage() && (section === "logs" || section === "manage" || section === "personnel")) {
+        alert("This section is restricted by your role.");
+        return;
+      }
+      document.querySelectorAll(".nav button").forEach(b => b.classList.remove("active"));
+      btn.classList.add("active");
+      document.querySelectorAll(".section").forEach(s => s.classList.remove("active"));
+      $(section).classList.add("active");
+    });
+
+    document.querySelectorAll("[data-auth-tab]").forEach(btn => btn.addEventListener("click", () => setAuthTab(btn.dataset.authTab)));
+    $("loginBtn").addEventListener("click", login);
+    $("registerBtn").addEventListener("click", register);
+    $("verifyBtn").addEventListener("click", verifyRoblox);
+    $("logoutBtn").addEventListener("click", () => { state.currentUser = null; saveState(); closeApp(); });
+    $("refreshBtn").addEventListener("click", refreshAll);
+    $("seedBtn").addEventListener("click", resetSampleData);
+    $("addPersonnelBtn").addEventListener("click", addPersonnel);
+    $("addXpBtn").addEventListener("click", () => adjustXp(1));
+    $("removeXpBtn").addEventListener("click", () => adjustXp(-1));
+    $("clearLogsBtn").addEventListener("click", clearLogs);
+    $("saveProfileBtn").addEventListener("click", () => {
+      state.profile.displayName = $("profileDisplay").value.trim();
+      state.profile.bio = $("profileBio").value.trim();
+      state.profile.visibility = $("profileVisibility").value;
+      if (state.currentUser) state.currentUser.displayName = state.profile.displayName || state.currentUser.username;
+      logAction("Profile saved", "Profile customization updated.");
+      renderProfile();
+      refreshAll();
+      alert("Profile saved.");
+    });
+    $("testSyncBtn").addEventListener("click", testSync);
+    $("fetchLeaderboardBtn").addEventListener("click", fetchLeaderboard);
+    $("searchInput").addEventListener("input", renderLeaderboard);
+    $("viewFilter").addEventListener("change", renderLeaderboard);
+    $("currentUserRole").addEventListener("change", () => { if (isFEM() && state.currentUser) state.currentUser.role = $("currentUserRole").value; refreshAll(); });
+    $("apiBase").addEventListener("change", refreshAll);
+    $("profileDisplay").addEventListener("input", () => { $("avatarPreview").textContent = ($("profileDisplay").value.trim() || state.currentUser?.username || "P").charAt(0).toUpperCase(); });
+
+    document.addEventListener("click", (e) => {
+      const btn = e.target.closest("[data-action]");
+      if (!btn) return;
+      const id = btn.dataset.id;
+      if (btn.dataset.action === "select") selectPersonnel(id);
+      if (btn.dataset.action === "delete") deletePersonnel(id);
+    });
+
+    document.querySelectorAll(".accent-picker button").forEach(btn => {
+      btn.addEventListener("click", () => { state.profile.accent = btn.dataset.accent; updateAccent(); refreshAll(); });
+    });
+
+    document.getElementById("currentUserRole").innerHTML = roleOptionsHTML(true);
+    document.getElementById("regRole").innerHTML = roleOptionsHTML(false);
+    document.getElementById("personnelRole").innerHTML = roleOptionsHTML(false);
+    document.getElementById("apiBase").value = localStorage.getItem(API_KEY) || "";
+
+    loadState();
+    updateAccent();
+    renderProfile();
+    refreshAll();
+    if (state.currentUser) openApp(); else setAuthTab("login");
+  </script></body>
+</html>
